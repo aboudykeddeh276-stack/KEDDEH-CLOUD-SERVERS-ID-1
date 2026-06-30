@@ -429,7 +429,7 @@ Current mounted sectors include definition sectors (`definition_sector`), operat
 
 **Boundary:** Software records only. Does not claim physical disk control, hardware control, autonomous execution, or external certification.
 
-A Python skeleton modelling:
+A Python skeleton modeling:
 
 ```python
 @dataclass(frozen=True)
@@ -839,7 +839,7 @@ KEDDEH-CLOUD-SERVERS-ID-1/
 │   └── software_skeletons/
 │       └── kex_cell_network_engine.py    ← Cell/Route/Mirror/RestorePlan engine
 │
-└── .snapshots/                           ← Snapshot artefacts
+└── .snapshots/                           ← Snapshot artifacts
 ```
 
 ---
