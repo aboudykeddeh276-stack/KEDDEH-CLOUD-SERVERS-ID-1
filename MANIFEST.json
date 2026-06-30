@@ -1,0 +1,72 @@
+{
+  "name": "KEX HyperDrive Dashboard UI",
+  "created_utc": "2026-06-05T06:54:40.336192+00:00",
+  "files": [
+    {
+      "path": "package.json",
+      "size": 528,
+      "sha256": "f15ef4fd0c0ab4c09ad72d2c3208b39d0190e4da615118d49a723c54587eec39"
+    },
+    {
+      "path": "index.html",
+      "size": 298,
+      "sha256": "a9727164083a97d95617628325f0a48732fc8624b8c163dae1e7dfa56b3298ba"
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 297,
+      "sha256": "4f6e169cfeae22263212fc27937777e4ce2d5c80f6664b3cd43a48678e5dc2b9"
+    },
+    {
+      "path": "vite.config.ts",
+      "size": 156,
+      "sha256": "2516b16612ae151e7e543a0d91bcc50f6a175110d1da3111e25a8db0d77c57fe"
+    },
+    {
+      "path": "README.md",
+      "size": 702,
+      "sha256": "4a827271a594865a13e71b416375bc59b65ad18f800c9655feac1fb9f07f0ccc"
+    },
+    {
+      "path": "src/main.tsx",
+      "size": 236,
+      "sha256": "e994230bc895c282867ef3ea4cdc2ba7c613c176f30793467dfa7d4a7d6dd142"
+    },
+    {
+      "path": "src/types.ts",
+      "size": 501,
+      "sha256": "0bf69ac7f70d7a08778bcc624274a8213965b92d652c6e967f559583f5718ef6"
+    },
+    {
+      "path": "src/App.tsx",
+      "size": 4105,
+      "sha256": "441fbdc223775f8e046a4e7b6e5df2be909ae1b95238db79d73fc4ac6bb11560"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size": 326,
+      "sha256": "71fdda0f406c99e8b2317b881c5cdb0a52f0103d48a19313574ef0bdd949c7f9"
+    },
+    {
+      "path": "docs/FINAL_CRITIQUE.md",
+      "size": 567,
+      "sha256": "47b51745f2a678bf1f6885aac38dbc5ba977c026dd21a700ea141eefb5a70cd0"
+    },
+    {
+      "path": "src/data/placeholders.ts",
+      "size": 4532,
+      "sha256": "3510c8b4fa7cddb40d7c1105944959fe1877abac28ae80ca460d19838af1d64e"
+    },
+    {
+      "path": "src/styles/global.css",
+      "size": 4603,
+      "sha256": "2cbddb68ccc0bfccc7f3fd007270f5e5eb73a7511650f5f0ec73f51ede28ab06"
+    },
+    {
+      "path": "src/lib/adapters/README.md",
+      "size": 346,
+      "sha256": "ac67e875b2ddaba07f989d728d469afb34587e63572f959db8f9042bc197e030"
+    }
+  ],
+  "package_hash": "12c5c31022f1b4767e4c88cb7c6f7304f0d426e0c44229de60e026209f72cc6b"
+}
