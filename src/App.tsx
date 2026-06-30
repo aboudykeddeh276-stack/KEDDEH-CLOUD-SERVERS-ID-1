@@ -4,6 +4,7 @@ import { BilateralMonitor } from "./components/BilateralMonitor";
 import { InventoryPanel } from "./components/InventoryPanel";
 import { WorkloadPanel } from "./components/WorkloadPanel";
 import { AssistantCodingConnector } from "./components/AssistantCodingConnector";
+import { AiEnhancedPanel } from "./components/AiEnhancedPanel";
 
 export default function App() {
   return (
@@ -32,6 +33,8 @@ export default function App() {
         <div className="span12">
           <BilateralMonitor />
         </div>
+
+        <AiEnhancedPanel span="span12" />
 
         <AssistantCodingConnector />
 
