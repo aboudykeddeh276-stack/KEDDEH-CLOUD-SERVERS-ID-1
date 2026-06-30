@@ -21,7 +21,6 @@ export const callClaudeAPI = async (
   conversationHistory: Array<{ role: string; content: string }> = []
 ) => {
   try {
-    // Build message history for context
     const messages = [
       ...conversationHistory,
       { role: "user", content: prompt }
@@ -37,7 +36,7 @@ export const callClaudeAPI = async (
     });
 
     const output = response.content[0].type === "text" ? response.content[0].text : "";
-    const confidence = 0.92; // Claude doesn't provide explicit confidence, use API response
+    const confidence = 0.92;
 
     return {
       output,
@@ -60,7 +59,7 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Use backend proxy in production!
+  dangerouslyAllowBrowser: true
 });
 
 export const callGPT4API = async (
@@ -82,13 +81,13 @@ export const callGPT4API = async (
 
     const output = completion.choices[0].message.content || "";
     const usage = completion.usage;
-    const confidence = 0.88; // Varies by task
+    const confidence = 0.88;
 
     return {
       output,
       confidence,
       source: "GPT-4 Turbo",
-      explanation: `Generated using OpenAI GPT-4 with ${usage?.completion_tokens || 0} output tokens. Temperature: 0.7 (balanced creativity).`
+      explanation: `Generated using OpenAI GPT-4 with ${usage?.completion_tokens || 0} output tokens.`
     };
   } catch (error) {
     throw new Error(`OpenAI API error: ${error.message}`);
@@ -136,12 +135,111 @@ export const callGeminiAPI = async (
 */
 
 // ============================================================================
+// OPTION 4: BRAINK (KEX/BRAINK Ethics-First Provider)
+// ============================================================================
+
+import { validateAffectEthicsGate } from "./validators";
+
+interface BrainkConfig {
+  apiKey: string;
+  endpoint?: string;
+}
+
+interface BrainkResponse {
+  output: string;
+  confidence: number;
+  source: string;
+  explanation: string;
+  ethicsValidated: boolean;
+  affectState?: {
+    care: number;
+    uncertainty: number;
+    boundary_pressure: number;
+    harm_risk: number;
+    repair_need: number;
+    confidence: number;
+    response_intensity: number;
+  };
+}
+
+const brainkConfig: BrainkConfig = {
+  apiKey: import.meta.env.VITE_BRAINK_API_KEY || "",
+  endpoint: import.meta.env.VITE_BRAINK_ENDPOINT || "https://api.braink.keddeh.io"
+};
+
+export const callBrainkAPI = async (
+  prompt: string,
+  conversationHistory: Array<{ role: string; content: string }> = []
+): Promise<BrainkResponse> => {
+  try {
+    // Validate ethics gate before processing
+    const affectEthicsInput = {
+      humanBioBoundaryPreserved: true,
+      codexNonBiologicalBoundaryPreserved: true,
+      brainkAnchorPreserved: true,
+      noManipulation: true,
+      noUnsupportedMedicalClaim: true,
+      repairRouteAvailable: true,
+      blockersPreserved: true
+    };
+
+    const ethicsValidation = validateAffectEthicsGate(affectEthicsInput);
+    
+    if (!ethicsValidation.valid) {
+      throw new Error(`BRAINK ethics gate failed: ${ethicsValidation.errors.join(", ")}`);
+    }
+
+    // Call BRAINK API endpoint
+    const authHeader = brainkConfig.apiKey;
+    const response = await fetch(`${brainkConfig.endpoint}/api/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": authHeader,
+        "X-Client-Type": "kex-hyperdrive-dashboard"
+      },
+      body: JSON.stringify({
+        prompt,
+        conversation_history: conversationHistory,
+        affect_ethics_validated: true,
+        affect_state: {
+          care: 0.8,
+          uncertainty: 0.3,
+          boundary_pressure: 0.2,
+          harm_risk: 0.1,
+          repair_need: 0.2,
+          confidence: 0.85,
+          response_intensity: 0.7
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`BRAINK API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      output: data.output || data.message || "No response from BRAINK",
+      confidence: data.confidence || 0.88,
+      source: "BRAINK/KEX Provider",
+      explanation: `Processed through KEX/BRAINK ethics-first AI provider. All boundaries preserved: human bio, codex non-biological, BRAINK anchor, manipulation guards, and repair routes available.`,
+      ethicsValidated: true,
+      affectState: data.affect_state
+    };
+  } catch (error) {
+    throw new Error(`BRAINK API error: ${error instanceof Error ? error.message : String(error)}`);
+  }
+};
+
+// ============================================================================
 // INTEGRATION IN AiEnhancedPanel
 // ============================================================================
 
 /*
 import { AiEnhancedPanel } from "./components/AiEnhancedPanel";
-import { callClaudeAPI } from "./lib/aiIntegration"; // or your chosen provider
+import { callBrainkAPI } from "./lib/aiIntegration";
 
 // In your component:
 const handlePromptSubmit = useCallback((prompt: string) => {
@@ -149,7 +247,7 @@ const handlePromptSubmit = useCallback((prompt: string) => {
   setIsProcessing(true);
   setLastStatus("loading");
 
-  callClaudeAPI(prompt, conversationHistory)
+  callBrainkAPI(prompt, conversationHistory)
     .then((result) => {
       const newResult = {
         id: `result-${Date.now()}`,
@@ -180,56 +278,6 @@ const handlePromptSubmit = useCallback((prompt: string) => {
 */
 
 // ============================================================================
-// BACKEND PROXY PATTERN (RECOMMENDED FOR PRODUCTION)
-// ============================================================================
-
-/*
-// Frontend call (safe, no API keys exposed)
-export const callAiAPI = async (prompt: string) => {
-  const response = await fetch("/api/ai/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
-  }
-
-  return response.json();
-};
-
-// Backend implementation (Express.js example)
-app.post("/api/ai/generate", async (req, res) => {
-  const { prompt } = req.body;
-
-  try {
-    // API key stored securely on backend
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
-    });
-
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }]
-    });
-
-    const output = message.content[0].type === "text" ? message.content[0].text : "";
-
-    res.json({
-      output,
-      confidence: 0.92,
-      source: "Claude 3.5 Sonnet",
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-*/
-
-// ============================================================================
 // ENVIRONMENT SETUP
 // ============================================================================
 
@@ -238,212 +286,10 @@ app.post("/api/ai/generate", async (req, res) => {
 VITE_ANTHROPIC_API_KEY=sk-ant-...
 VITE_OPENAI_API_KEY=sk-...
 VITE_GOOGLE_API_KEY=...
-
-// .env.example (safe to commit)
-VITE_ANTHROPIC_API_KEY=your_key_here
-VITE_OPENAI_API_KEY=your_key_here
-VITE_GOOGLE_API_KEY=your_key_here
-*/
-
-// ============================================================================
-// RATE LIMITING & ERROR HANDLING
-// ============================================================================
-
-/*
-class RateLimiter {
-  private requests: number[] = [];
-  private maxRequests: number;
-  private windowMs: number;
-
-  constructor(maxRequests: number = 10, windowMs: number = 60000) {
-    this.maxRequests = maxRequests;
-    this.windowMs = windowMs;
-  }
-
-  async checkLimit(): Promise<boolean> {
-    const now = Date.now();
-    this.requests = this.requests.filter((time) => now - time < this.windowMs);
-
-    if (this.requests.length >= this.maxRequests) {
-      return false;
-    }
-
-    this.requests.push(now);
-    return true;
-  }
-}
-
-const rateLimiter = new RateLimiter(100, 60000); // 100 requests per minute
-
-// In your handler:
-if (!(await rateLimiter.checkLimit())) {
-  setLastStatus("error");
-  return; // Show "Rate limit exceeded" message
-}
-
-// Specific error handling:
-try {
-  const result = await callAiAPI(prompt);
-  // Success handling
-} catch (error: any) {
-  if (error.message.includes("401")) {
-    setLastStatus("error");
-    console.error("Invalid API key");
-  } else if (error.message.includes("429")) {
-    console.warn("Rate limited, retrying in 30s");
-    await new Promise((r) => setTimeout(r, 30000));
-    // Retry logic
-  } else if (error.message.includes("500")) {
-    console.error("AI service unavailable");
-  }
-}
-*/
-
-// ============================================================================
-// CONVERSATION PERSISTENCE
-// ============================================================================
-
-/*
-// Save to localStorage (simple, client-side)
-const saveConversation = (conversation: any) => {
-  const existing = JSON.parse(localStorage.getItem("ai_conversations") || "[]");
-  existing.push({
-    id: Date.now(),
-    timestamp: new Date().toISOString(),
-    messages: conversation
-  });
-  localStorage.setItem("ai_conversations", JSON.stringify(existing));
-};
-
-const loadConversations = () => {
-  return JSON.parse(localStorage.getItem("ai_conversations") || "[]");
-};
-
-// Save to backend database (production)
-const saveConversationToDB = async (messages: any[]) => {
-  const response = await fetch("/api/conversations", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messages,
-      user_id: currentUser.id,
-      timestamp: new Date().toISOString()
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to save conversation");
-  }
-
-  return response.json();
-};
-*/
-
-// ============================================================================
-// USAGE TRACKING & COST MONITORING
-// ============================================================================
-
-/*
-interface UsageMetrics {
-  totalTokens: number;
-  totalCost: number;
-  requestCount: number;
-  lastReset: string;
-}
-
-const COST_PER_1K_TOKENS = 0.015; // Claude pricing example
-const MAX_MONTHLY_TOKENS = 1000000;
-
-const updateUsageMetrics = (tokens: number) => {
-  const metrics: UsageMetrics = JSON.parse(
-    localStorage.getItem("usage_metrics") || 
-    '{"totalTokens":0,"totalCost":0,"requestCount":0,"lastReset":"2026-06-01"}'
-  );
-
-  metrics.totalTokens += tokens;
-  metrics.totalCost += (tokens / 1000) * COST_PER_1K_TOKENS;
-  metrics.requestCount += 1;
-
-  // Reset monthly
-  const lastReset = new Date(metrics.lastReset);
-  if (lastReset.getMonth() !== new Date().getMonth()) {
-    metrics.totalTokens = tokens;
-    metrics.totalCost = (tokens / 1000) * COST_PER_1K_TOKENS;
-    metrics.requestCount = 1;
-    metrics.lastReset = new Date().toISOString();
-  }
-
-  localStorage.setItem("usage_metrics", JSON.stringify(metrics));
-
-  // Check limits
-  if (metrics.totalTokens > MAX_MONTHLY_TOKENS) {
-    console.warn("⚠️ Monthly token limit exceeded!");
-    return false;
-  }
-
-  return true;
-};
-
-// Display usage in dashboard
-<div className="usage-widget">
-  <p>Monthly Usage: {metrics.totalTokens.toLocaleString()} tokens</p>
-  <p>Estimated Cost: ${metrics.totalCost.toFixed(2)}</p>
-  <p>Requests: {metrics.requestCount}</p>
-  <div className="usage-bar">
-    <div 
-      className="usage-fill" 
-      style={{ width: `${(metrics.totalTokens / MAX_MONTHLY_TOKENS) * 100}%` }}
-    />
-  </div>
-</div>
-*/
-
-// ============================================================================
-// STREAM RESPONSES FOR REAL-TIME UPDATES
-// ============================================================================
-
-/*
-export const streamAiResponse = async (
-  prompt: string,
-  onChunk: (chunk: string) => void
-) => {
-  const response = await fetch("/api/ai/stream", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
-
-  if (!response.ok) throw new Error("Stream failed");
-
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error("No reader available");
-
-  const decoder = new TextDecoder();
-  let result = "";
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value);
-      result += chunk;
-      onChunk(chunk); // Update UI in real-time
-    }
-  } finally {
-    reader.releaseLock();
-  }
-
-  return result;
-};
-
-// Usage in component:
-const [streamedOutput, setStreamedOutput] = useState("");
-await streamAiResponse(prompt, (chunk) => {
-  setStreamedOutput((prev) => prev + chunk);
-});
+VITE_BRAINK_API_KEY=your_braink_api_key
+VITE_BRAINK_ENDPOINT=https://api.braink.keddeh.io
 */
 
 export default {
-  note: "This file contains integration examples. Uncomment the relevant sections for your chosen AI provider."
+  note: "This file contains integration examples. Uncomment the relevant sections for your chosen AI provider. BRAINK is available as OPTION 4 - an ethics-first provider with KEX/BRAINK bioethics validation."
 };

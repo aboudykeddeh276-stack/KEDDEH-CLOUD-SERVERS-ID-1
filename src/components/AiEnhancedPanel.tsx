@@ -212,7 +212,7 @@ export const AiEnhancedPanel: React.FC<AiEnhancedPanelProps> = ({
           >
             <strong style={{ color: "var(--cyan)" }}>🔌 Integration Steps:</strong>
             <ol style={{ margin: "8px 0 0", paddingLeft: "20px" }}>
-              <li>Connect to Claude, GPT, or Gemini API</li>
+              <li>Connect to BRAINK, Claude, GPT, or Gemini API</li>
               <li>Add authentication (API key validation)</li>
               <li>Implement streaming for real-time responses</li>
               <li>Add database persistence (conversations)</li>
