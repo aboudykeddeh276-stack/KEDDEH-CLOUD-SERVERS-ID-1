@@ -319,7 +319,12 @@ class GlobalStateResolutionExecutionAndAtomicMutationDeploymentAgent:
         ):
             target_path_object: pathlib.Path = pathlib.Path(
                 individual_state_discrepancy_or_seed_vector.targeted_absolute_file_system_or_network_node_path_string
-            )
+            ).resolve()
+            repository_root_path_object: pathlib.Path = pathlib.Path(
+                self.associated_parent_orchestration_engine.target_repository_root_directory_absolute_path_string
+            ).resolve()
+            if not str(target_path_object).startswith(str(repository_root_path_object) + os.sep):
+                return False
             target_path_object.parent.mkdir(parents=True, exist_ok=True)
             with open(target_path_object, "w", encoding="utf-8") as file_handle:
                 file_handle.write(
