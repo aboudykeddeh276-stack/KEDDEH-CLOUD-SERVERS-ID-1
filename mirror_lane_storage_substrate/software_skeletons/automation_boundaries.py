@@ -11,7 +11,6 @@ Boundary:
 - Does not claim physical disk control, hardware control, autonomous execution, or external certification.
 """
 
-import collections
 import dataclasses
 import enum
 import inspect
@@ -72,6 +71,7 @@ class GlobalMasterRepositoryAutomatedSystemIntegrityAndStateSeedTransferEngineMa
             GlobalRepositoryAutomationAndMeshKernelExecutionStatusEnumeration.ABSOLUTE_INITIALIZATION_STATE_UNVERIFIED
         )
         self.internal_agent_execution_telemetry_historical_archive_list: typing.List[typing.Dict[str, typing.Any]] = []
+        self.current_recursive_decomposition_depth_counter_integer: int = 0
 
     def execute_complete_repository_state_integrity_verification_and_self_healing_lifecycle(self) -> typing.Dict[str, typing.Any]:
         """
@@ -169,6 +169,12 @@ class GlobalMasterRepositoryAutomatedSystemIntegrityAndStateSeedTransferEngineMa
             GlobalRepositoryAutomationAndMeshKernelExecutionStatusEnumeration.POST_MUTATION_INTEGRITY_AND_BRAINK_LEVEL_SIX_RE_VERIFICATION_ACTIVE
         )
 
+        self.current_recursive_decomposition_depth_counter_integer += 1
+        if self.current_recursive_decomposition_depth_counter_integer >= self.maximum_allowable_recursive_decomposition_depth_limit_integer:
+            raise RecursionError(
+                "CRITICAL_RECURSION_LIMIT: Maximum allowable recursive decomposition depth exceeded."
+            )
+
         return self.execute_complete_repository_state_integrity_verification_and_self_healing_lifecycle()
 
     def execute_ultimate_failover_and_exception_mitigation_protocol(
@@ -193,8 +199,8 @@ class GlobalMasterRepositoryAutomatedSystemIntegrityAndStateSeedTransferEngineMa
             "triggered_exception_type_name_string": type(triggered_execution_exception).__name__,
             "triggered_exception_message_string": str(triggered_execution_exception),
             "formatted_traceback_diagnostic_string": formatted_traceback_string,
-            "execution_context_frame_locals_dictionary": (
-                execution_context_frame_object.f_locals if execution_context_frame_object else {}
+            "execution_context_frame_local_variable_names_list": (
+                list(execution_context_frame_object.f_locals.keys()) if execution_context_frame_object else []
             ),
         }
 
