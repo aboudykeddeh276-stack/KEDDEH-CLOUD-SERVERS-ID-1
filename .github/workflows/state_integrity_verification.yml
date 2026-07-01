@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   execute_exhaustive_uncompressed_state_verification:
     runs-on: ubuntu-latest
@@ -27,12 +30,16 @@ jobs:
         run: |
           python3 -c "
           import pathlib
+          import os
           from repository_automation import GlobalMasterRepositoryAutomatedSystemIntegrityAndStateSeedTransferEngineMasterController
 
+          repo_root = str(pathlib.Path('.').resolve())
+          readme_path = os.path.join(repo_root, 'README.md')
+
           orchestration_engine_instance = GlobalMasterRepositoryAutomatedSystemIntegrityAndStateSeedTransferEngineMasterController(
-              target_repository_root_directory_absolute_path_string=str(pathlib.Path('.').resolve()),
+              target_repository_root_directory_absolute_path_string=repo_root,
               keddeh_matrix_reference_configuration_blueprint_dictionary={
-                  'LITERAL_PATH_IDENTIFIER_VOLUME_ROOT_CONFIGURATION_FILE': {'hash': 'REFERENCE_STATE_HASH_VALUE_LITERAL_ONE'}
+                  readme_path: {'hash': 'REFERENCE_STATE_HASH_VALUE_LITERAL_ONE'}
               }
           )
           execution_telemetry_result_dictionary = orchestration_engine_instance.execute_complete_repository_state_integrity_verification_and_self_healing_lifecycle()
