@@ -49,8 +49,8 @@ export function queryRepositories(query: RepositoryQuery = {}): RepositoryConnec
 export function querySystems(query: SystemQuery = {}): (RepositorySystem & { repositoryName: string })[] {
   const results: (RepositorySystem & { repositoryName: string })[] = [];
   for (const repo of repositoryConnectorSeed) {
+    if (query.repositoryId && repo.repositoryId !== query.repositoryId) continue;
     for (const system of repo.systems) {
-      if (query.repositoryId && repo.repositoryId !== query.repositoryId) continue;
       if (query.layer && system.layer !== query.layer) continue;
       if (query.text) {
         const haystack = `${system.systemId} ${system.name} ${system.description} ${system.layer}`.toLowerCase();
