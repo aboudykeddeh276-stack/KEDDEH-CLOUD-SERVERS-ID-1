@@ -156,6 +156,17 @@ export const inventorySeed: InventoryObject[] = [
     paths: ['src/data/transitionDefinitionSeed.ts'],
     notes: 'Source-level seed data for transition-definition operators.',
   },
+  {
+    id: 'KEX-DATA-REPOS-0001',
+    name: 'Repository Connector',
+    class: 'DATA',
+    domain: 'INTEGRATION',
+    status: 'active',
+    evidence: 'E4',
+    parent: 'KEX-ARCH-HYPERDRIVE-0001',
+    paths: ['src/data/repositoryConnectorSeed.ts', 'src/lib/adapters/repositoryConnectorAdapter.ts', 'src/lib/adapters/repositoryConnectorAdapter.test.ts'],
+    notes: 'Cross-repository integration layer mapping all 4 ecosystem repositories, their systems, governance states, and iterative use sequence.',
+  },
 ];
 
 export function findInventoryObject(id: string): InventoryObject | undefined {

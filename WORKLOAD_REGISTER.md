@@ -19,6 +19,9 @@ This register is updated as work is identified and completed.
 | WL-0011 | KEX HyperDrive instantiation research trajectory | completed | KEX-ARCH-HYPERDRIVE-0001 | docs/KEX_HYPERDRIVE_INSTANTIATION_RESEARCH.md | Deep analysis exists with lanes, software strategies, proof gates, and pending external validation boundaries. |
 | WL-0012 | Dashboard workload source alignment | completed | KEX-DOC-WORKLOAD-0001 | src/data/workloadSeed.ts; src/lib/adapters/workloadAdapter.ts | Source workload queue mirrors the active register and supports status summaries. |
 | WL-0013 | Dashboard inventory/workload projection | completed | KEX-UI-HYPERDRIVE-0001 | src/components/InventoryPanel.tsx; src/components/WorkloadPanel.tsx; src/App.tsx; src/styles/global.css | UI renders inventory and workload proof state without autonomous/runtime overclaiming. |
+| WL-0014 | Repository connector seed data | completed | KEX-DATA-REPOS-0001 | src/data/repositoryConnectorSeed.ts | Source file exports all 4 ecosystem repositories with their systems, roles, governance states, and integration points. |
+| WL-0015 | Repository connector adapter | completed | KEX-DATA-REPOS-0001 | src/lib/adapters/repositoryConnectorAdapter.ts | Adapter queries repositories, systems, integration points, and produces ecosystem summaries and iterative use sequences. |
+| WL-0016 | Repository connector adapter tests | completed | KEX-DATA-REPOS-0001 | src/lib/adapters/repositoryConnectorAdapter.test.ts | Tests cover query, system lookup, ecosystem summary, integration resolution, and iterative sequence. |
 
 ## Update Rule
 

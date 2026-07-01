@@ -39,6 +39,7 @@ Rule: read this file before adding or renaming concepts. Extend existing entries
 | KEX-BOUNDARY-HYPERDRIVE-0001 | Frontend Boundary | BOUNDARY | HYPERDRIVE | active | E1 | KEX-ARCH-HYPERDRIVE-0001 | This repository is a frontend until connected to real services. |
 | KEX-DOC-BRAINK-0001 | Learning Synthesis | DOC | BRAINK | active | E1 | KEX-ARCH-HYPERDRIVE-0001 | Repository learning model and capability synthesis. |
 | KEX-DOC-AUTH-0001 | Agent Roles | DOC | BOUNDARY | active | E1 | KEX-LEDGER-INV-0001 | Defines A. Keddeh direction and bounded software-agent roles. |
+| KEX-DATA-REPOS-0001 | Repository Connector | DATA | INTEGRATION | active | E4 | KEX-ARCH-HYPERDRIVE-0001 | Cross-repository integration mapping all ecosystem repositories, systems, and iterative use sequence. |
 
 ## Required Entry Template
 

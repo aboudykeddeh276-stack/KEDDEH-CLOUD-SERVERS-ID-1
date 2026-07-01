@@ -134,6 +134,33 @@ export const workloadSeed: WorkloadObject[] = [
     completionCondition: 'UI renders inventory and workload proof state without autonomous/runtime overclaiming.',
     notes: 'Makes local proof, workload state, and pending boundaries visible in the dashboard.',
   },
+  {
+    workloadId: 'WL-0014',
+    name: 'Repository connector seed data',
+    status: 'completed',
+    parentInventoryObject: 'KEX-DATA-REPOS-0001',
+    repositoryPaths: ['src/data/repositoryConnectorSeed.ts'],
+    completionCondition: 'Source file exports all 4 ecosystem repositories with their systems, roles, governance states, and integration points.',
+    notes: 'Maps GENERAL-GOVERNANCE-, BRAINK, KEDDEH_SOFTWARE_NODES, and KEDDEH-CLOUD-SERVERS-ID-1 as typed connector entries.',
+  },
+  {
+    workloadId: 'WL-0015',
+    name: 'Repository connector adapter',
+    status: 'completed',
+    parentInventoryObject: 'KEX-DATA-REPOS-0001',
+    repositoryPaths: ['src/lib/adapters/repositoryConnectorAdapter.ts'],
+    completionCondition: 'Adapter queries repositories, systems, integration points, and produces ecosystem summaries and iterative use sequences.',
+    notes: 'Supports role, governance state, language, and text queries. Provides iterativeUseSequence for ordered cross-repo traversal.',
+  },
+  {
+    workloadId: 'WL-0016',
+    name: 'Repository connector adapter tests',
+    status: 'completed',
+    parentInventoryObject: 'KEX-DATA-REPOS-0001',
+    repositoryPaths: ['src/lib/adapters/repositoryConnectorAdapter.test.ts'],
+    completionCondition: 'Tests cover query, system lookup, ecosystem summary, integration resolution, and iterative sequence.',
+    notes: '14 test cases verifying the full adapter surface.',
+  },
 ];
 
 export function listWorkloadsByStatus(status: WorkloadStatus): WorkloadObject[] {
