@@ -1,0 +1,14 @@
+{
+  "schema":"keddeh.active-server-bindings.r16/v1",
+  "dispatcher":"aboudykeddeh276-stack/BRAINK/federation/R16/sector_activation_runtime.py",
+  "activation_manifest":"aboudykeddeh276-stack/BRAINK/federation/R16/ACTIVE_SECTOR_BINDINGS_R16.json",
+  "server_room":"server-room://keddeh/ai-enterprise",
+  "server_sets":{
+    "HR_SERVER_SET":{"state":"ACTIVE_BOUND","runtime":"runtime://keddeh/hr-fabric"},
+    "AGENTIC_AI_SERVER_SET":{"state":"ACTIVE_BOUND","runtime":"runtime://braink/active-continuation"},
+    "MEMORY_SERVER_SET":{"state":"ACTIVE_BOUND","runtime":"KEX://MEMORY/RING1-RING2"},
+    "MAILING_INTEGRATION_SERVER_SET":{"state":"BOUND_ADAPTER_REQUIRED","runtime":"adapter://messaging/fabric"},
+    "DEPLOYMENT_SERVER_SET":{"state":"ACTIVE_BOUND","runtime":"adapter://keddeh/production-actuator"}
+  },
+  "law":"sector dispatcher selects shared server sets by capability; no per-sector server clone"
+}
