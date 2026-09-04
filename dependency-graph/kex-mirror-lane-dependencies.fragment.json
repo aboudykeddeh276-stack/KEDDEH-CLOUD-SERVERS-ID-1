@@ -1,0 +1,42 @@
+{
+  "schema": "kex.braink.dependency-edges.fragment.v1",
+  "fragment_id": "KEX_MIRROR_LANE_STATE_TRANSFER_R1",
+  "declared_edges": [
+    {
+      "source": "mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py",
+      "target": "mirror_lane_storage_substrate/MIRROR_LANE_COMPONENT_SPEC.json",
+      "class": "MODULE_DEPENDENCY",
+      "relationship": "governed-by",
+      "scope": "runtime",
+      "interface": "component governance contract",
+      "authority": "KEX_CLOUD_MIRROR_LANE"
+    },
+    {
+      "source": "mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py",
+      "target": "runtime://host/filesystem-atomic-replace-fsync",
+      "class": "RUNTIME_AUTHORITY_DEPENDENCY",
+      "relationship": "requires",
+      "scope": "runtime",
+      "interface": "durable file/state projection",
+      "authority": "HOST_FILESYSTEM"
+    },
+    {
+      "source": "mirror_lane_storage_substrate/tests/test_kex_mirror_lane_runtime.py",
+      "target": "mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py",
+      "class": "MODULE_DEPENDENCY",
+      "relationship": "qualifies",
+      "scope": "development",
+      "interface": "update/restore parity and corruption tests",
+      "authority": "KEX_CLOUD_MIRROR_LANE"
+    },
+    {
+      "source": "repository://aboudykeddeh276-stack/BRAINK",
+      "target": "runtime://kex/mirror-lane/state-transfer/r1",
+      "class": "REPOSITORY_DEPENDENCY",
+      "relationship": "consumes",
+      "scope": "cross-repository-integration",
+      "interface": "MirrorLaneTransferAdapter / transfer receipt",
+      "authority": "BRAINK_CONSUMER_BOUNDARY"
+    }
+  ]
+}

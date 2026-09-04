@@ -1,0 +1,64 @@
+{
+  "schema": "kex.braink.governance-component-spec.v1",
+  "component_id": "KEX_MIRROR_LANE_STATE_TRANSFER_R1",
+  "display_name": "KEX Mirror Lane State Transfer",
+  "classification": "RUNTIME_STATE_TRANSFER_ACTUATOR",
+  "repository": "aboudykeddeh276-stack/KEDDEH-CLOUD-SERVERS-ID-1",
+  "sector": "CLOUD_INFRASTRUCTURE_MIRROR_LANE",
+  "substrate_boundary": "software file/state replication over host filesystem; no physical disk or hardware RAID authority",
+  "state_class": "file-backed mirrored state plus deterministic manifest",
+  "persistence_class": "filesystem atomic replace + fsync + persisted mirror manifest",
+  "address_space": "filesystem-relative path namespace inside source/mirror roots",
+  "virtualisation_type": "storage/state projection",
+  "communication_mechanisms": ["process invocation", "filesystem IO", "JSON receipt"],
+  "authority": {
+    "owner": "A.KEDDEH / KEDDEH_SYSTEMS / KEX_CLOUD_MIRROR_LANE",
+    "mutation_authority": "KEX_MIRROR_LANE_STATE_TRANSFER_RUNTIME",
+    "external_authorities": ["host filesystem", "downstream consumer repository authority"]
+  },
+  "interfaces": [
+    {"name":"mirror_update","producer":"KEX_MIRROR_LANE_STATE_TRANSFER_RUNTIME","consumer":"mirror storage root","contract":"source root -> deterministic manifest -> verified mirror receipt"},
+    {"name":"mirror_restore","producer":"KEX_MIRROR_LANE_STATE_TRANSFER_RUNTIME","consumer":"destination state root","contract":"verified mirror -> restored state -> parity receipt"},
+    {"name":"braink_transfer_adapter","producer":"BRAINK MirrorLaneTransferAdapter","consumer":"KEX_MIRROR_LANE_STATE_TRANSFER_RUNTIME","contract":"cross-repository subprocess/receipt contract; mirror semantics remain cloud-owned"}
+  ],
+  "dependencies": [
+    {"class":"PACKAGE_DEPENDENCY","target":"python://stdlib/hashlib-json-os-shutil-tempfile-pathlib"},
+    {"class":"RUNTIME_AUTHORITY_DEPENDENCY","target":"runtime://host/filesystem-atomic-replace-fsync"},
+    {"class":"REPOSITORY_DEPENDENCY","target":"repository://aboudykeddeh276-stack/BRAINK","scope":"consumer-only"}
+  ],
+  "source_paths": [
+    "mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py",
+    "mirror_lane_storage_substrate/tests/test_kex_mirror_lane_runtime.py"
+  ],
+  "proof_conditions": [
+    "post-update mirror manifest digest equals source manifest digest",
+    "corrupted mirror is rejected before restore",
+    "post-restore destination manifest digest equals verified mirror manifest digest",
+    "stale replica files are removed",
+    "unchanged update is idempotent",
+    "downstream cross-repository consumer verifies its own state/identity invariants"
+  ],
+  "rollback_requirements": [
+    "failed update/restore must not be promoted",
+    "downstream consumer must retain prior authoritative state until restored state passes its own readback",
+    "cross-host carrier failure must be classified separately from mirror-runtime failure"
+  ],
+  "promotion_states": ["DECLARED","STRUCTURED","IMPLEMENTED","ISOLATED_QUALIFIED","CROSS_REPO_INTEGRATED","CROSS_PROCESS_QUALIFIED","CROSS_MACHINE_QUALIFIED","REPEATABLE","PROMOTED"],
+  "evidence": {
+    "root": "mirror_lane_storage_substrate/evidence",
+    "receipt_schemas": ["kex.mirror-lane.manifest.v1","kex.mirror-lane.transfer-receipt.v1"]
+  },
+  "cross_platform": {
+    "required_capabilities": ["filesystem recursive enumeration","SHA-256","atomic rename/replace","durable file flush","durable directory flush or documented platform substitute","process invocation","JSON"],
+    "platform_specific_adapters": ["POSIX fsync/replace current implementation","macOS POSIX-compatible lane","Windows durable-write/replace adapter required before Windows qualification"]
+  },
+  "administration": {
+    "operators": ["KEDDEH_SYSTEMS_ADMINISTRATION_TEAM","BRAINK qualification workflows as bounded consumer"]
+  },
+  "invalid_claims": [
+    "software mirror runtime is not physical RAID",
+    "single-host restore is not cross-machine migration proof",
+    "workflow queued state is not execution evidence",
+    "BRAINK consumer adapter does not own mirror-lane semantics"
+  ]
+}

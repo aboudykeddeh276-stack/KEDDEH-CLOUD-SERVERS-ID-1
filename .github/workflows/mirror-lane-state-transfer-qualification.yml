@@ -1,0 +1,113 @@
+name: KEX Mirror Lane State Transfer Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'mirror_lane_storage_substrate/**'
+      - 'dependency-graph/kex-mirror-lane-dependencies.fragment.json'
+      - 'INVENTORY.md'
+      - 'WORKLOAD_REGISTER.md'
+      - '.github/workflows/mirror-lane-state-transfer-qualification.yml'
+  push:
+    branches:
+      - asset/mirror-lane-state-transfer-r1
+    paths:
+      - 'mirror_lane_storage_substrate/**'
+      - 'dependency-graph/kex-mirror-lane-dependencies.fragment.json'
+      - 'INVENTORY.md'
+      - 'WORKLOAD_REGISTER.md'
+      - '.github/workflows/mirror-lane-state-transfer-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-qualification:
+    name: Hosted isolated qualification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Record exact revision
+        run: |
+          printf '%s\n' "repository=${GITHUB_REPOSITORY}" "commit_sha=${GITHUB_SHA}" "executor=github-hosted-linux"
+      - name: Admit component controls
+        run: |
+          test -f mirror_lane_storage_substrate/CONTROL_INDEX.md
+          test -f mirror_lane_storage_substrate/MIRROR_LANE_COMPONENT_SPEC.json
+          test -f mirror_lane_storage_substrate/PROCESS_WORKFLOW_CONTROL.md
+          test -f mirror_lane_storage_substrate/FILING_EVIDENCE_STANDARD.md
+          test -f mirror_lane_storage_substrate/CROSS_REPO_AUTHORITY_CONTRACT.md
+          test -f dependency-graph/kex-mirror-lane-dependencies.fragment.json
+      - name: Compile governed runtime
+        run: python -m py_compile mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py
+      - name: Run governance and runtime qualification
+        run: |
+          python -m pytest -q \
+            mirror_lane_storage_substrate/tests/test_mirror_lane_governance.py \
+            mirror_lane_storage_substrate/tests/test_kex_mirror_lane_runtime.py
+      - name: Emit hosted evidence receipt
+        run: |
+          mkdir -p evidence/mirror-lane
+          python - <<'PY'
+          import json, os, time
+          receipt={
+            'schema':'kex.mirror-lane.qualification-receipt.v1',
+            'component_id':'KEX_MIRROR_LANE_STATE_TRANSFER_R1',
+            'repository':os.environ['GITHUB_REPOSITORY'],
+            'commit_sha':os.environ['GITHUB_SHA'],
+            'executor':'github-hosted-linux',
+            'status':'PASS',
+            'evidence_scope':'ISOLATED_QUALIFICATION',
+            'recorded_ns':time.time_ns(),
+            'proof':['governance controls admitted','runtime compiled','governance tests passed','mirror update/restore tests passed']
+          }
+          json.dump(receipt,open('evidence/mirror-lane/hosted-qualification.json','w'),indent=2,sort_keys=True)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kex-mirror-lane-hosted-qualification
+          path: evidence/mirror-lane/hosted-qualification.json
+
+  resident-qualification:
+    name: Resident independent qualification
+    runs-on: [self-hosted, kex-cloud]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Record exact revision and resident executor
+        run: |
+          printf '%s\n' "repository=${GITHUB_REPOSITORY}" "commit_sha=${GITHUB_SHA}" "runner=${RUNNER_NAME}" "executor=resident-kex-cloud"
+      - name: Admit component controls
+        run: |
+          test -f mirror_lane_storage_substrate/MIRROR_LANE_COMPONENT_SPEC.json
+          test -f mirror_lane_storage_substrate/CROSS_REPO_AUTHORITY_CONTRACT.md
+          test -f dependency-graph/kex-mirror-lane-dependencies.fragment.json
+      - name: Run resident qualification
+        run: |
+          python -m py_compile mirror_lane_storage_substrate/runtime/kex_mirror_lane_runtime.py
+          python -m pytest -q \
+            mirror_lane_storage_substrate/tests/test_mirror_lane_governance.py \
+            mirror_lane_storage_substrate/tests/test_kex_mirror_lane_runtime.py
+      - name: Emit resident evidence receipt
+        run: |
+          mkdir -p evidence/mirror-lane
+          python - <<'PY'
+          import json, os, time
+          receipt={
+            'schema':'kex.mirror-lane.qualification-receipt.v1',
+            'component_id':'KEX_MIRROR_LANE_STATE_TRANSFER_R1',
+            'repository':os.environ['GITHUB_REPOSITORY'],
+            'commit_sha':os.environ['GITHUB_SHA'],
+            'executor':'resident-kex-cloud',
+            'runner_name':os.environ.get('RUNNER_NAME'),
+            'status':'PASS',
+            'evidence_scope':'INDEPENDENT_RESIDENT_QUALIFICATION',
+            'recorded_ns':time.time_ns(),
+            'proof':['governance controls admitted','runtime compiled','resident governance/runtime qualification passed']
+          }
+          json.dump(receipt,open('evidence/mirror-lane/resident-qualification.json','w'),indent=2,sort_keys=True)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kex-mirror-lane-resident-qualification
+          path: evidence/mirror-lane/resident-qualification.json
