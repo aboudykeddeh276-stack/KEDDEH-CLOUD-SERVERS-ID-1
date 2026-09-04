@@ -1,0 +1,16 @@
+{
+  "schema":"braink.estate-dependency-binding.r32/v1",
+  "repository":"aboudykeddeh276-stack/KEDDEH-CLOUD-SERVERS-ID-1",
+  "sector_role":"CLOUD_SERVER_STORAGE_SUPPORT",
+  "authority_state":"SUPPORTING_MIXED",
+  "function_routing":{
+    "cloud_allocation":"aboudykeddeh276-stack/kcloud-substrate",
+    "server_execution":"aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+    "storage_persistence":"aboudykeddeh276-stack/virtualized-storage",
+    "identity_orchestration":"aboudykeddeh276-stack/BRAINK"
+  },
+  "required_upstream":["BRAINK R28 resident-root verification","BRAINK R24 host-trust boundary","GENERAL-GOVERNANCE- R32 gates"],
+  "invariants":["MIXED_REPO_NE_DUPLICATE_SECTOR_AUTHORITY","LOGICAL_BINDING_NE_PUBLIC_HOST_PROOF","FUNCTION_MUST_ROUTE_TO_CANONICAL_OWNER"],
+  "migration_rule":"COPY_HASH_TEST_READBACK_THEN_ROUTE_AUTHORITY; preserve original carrier until verified",
+  "status":"DEPENDENCY_BOUND_FUNCTIONS_ROUTED"
+}
