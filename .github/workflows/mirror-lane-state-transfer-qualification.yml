@@ -27,7 +27,7 @@ jobs:
     name: Hosted isolated qualification
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Record exact revision
         run: |
           printf '%s\n' "repository=${GITHUB_REPOSITORY}" "commit_sha=${GITHUB_SHA}" "executor=github-hosted-linux"
@@ -64,7 +64,7 @@ jobs:
           }
           json.dump(receipt,open('evidence/mirror-lane/hosted-qualification.json','w'),indent=2,sort_keys=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: kex-mirror-lane-hosted-qualification
           path: evidence/mirror-lane/hosted-qualification.json
@@ -73,7 +73,7 @@ jobs:
     name: Resident independent qualification
     runs-on: [self-hosted, kex-cloud]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Record exact revision and resident executor
         run: |
           printf '%s\n' "repository=${GITHUB_REPOSITORY}" "commit_sha=${GITHUB_SHA}" "runner=${RUNNER_NAME}" "executor=resident-kex-cloud"
@@ -107,7 +107,7 @@ jobs:
           }
           json.dump(receipt,open('evidence/mirror-lane/resident-qualification.json','w'),indent=2,sort_keys=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: kex-mirror-lane-resident-qualification
           path: evidence/mirror-lane/resident-qualification.json
